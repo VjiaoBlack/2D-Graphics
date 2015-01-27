@@ -1,6 +1,10 @@
 #include "SDL.h"
 
+
 SDL_Surface* screen;
+SDL_Surface* screen;
+
+Uint32 pixel(int r, int g, int b);
 
 Uint32 get_pixel(SDL_Surface *surface, int x, int y);
 

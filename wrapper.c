@@ -1,15 +1,21 @@
 #include "wrapper.h"
 
+Uint32 pixel(int r, int g, int b) {
+    return SDL_MapRGB(screen->format, r, g, b);
+}
+
 Uint32 get_pixel(SDL_Surface *surface, int x, int y) {
     int bpp = 4;
-    Uint32 *p = (Uint32 *)surface->pixels + y * surface->pitch + x * bpp;
-    return *p;
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    return (Uint32) *p;
 }
 
 void put_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
     int bpp = 4;
-    Uint32 *p = (Uint32 *)surface->pixels + y * surface->pitch + x * bpp;
-    *p = pixel;
+    /* Here p is the address to the pixel we want to set */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+    *(Uint32 *)p = pixel;
     return;
 }
 
