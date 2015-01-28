@@ -94,14 +94,14 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
     // when you hit one of the base points, bresenham across the (slanted) base, drawing horizontal lines
     //      (conitnuing with the other bresenham)
 
-    int xi, xf, y; // these correspond to the points that iterate over the edges.
+    int xi, xf, y, x; // these correspond to the points that iterate over the edges.
 
 
     // organize points
     int vx, vy, lx, ly, rx, ry;
 
 
-    if (y1 >= y2 && y1 >= y3) {
+    if (y1 <= y2 && y1 <= y3) {
         vy = y1;
         vx = x1;
         if (x2 >= x3) {
@@ -115,7 +115,7 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
             lx = x2;
             ly = y2;
         }
-    } else if (y2 >= y1 && y2 >= y3) {
+    } else if (y2 <= y1 && y2 <= y3) {
         vy = y2;
         vx = x2;
         if (x1 >= x3) {
@@ -129,7 +129,7 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
             lx = x1;
             ly = y1;
         }
-    } else if (y3 >= y2 && y3 >= y1) {
+    } else /*if (y3 <= y2 && y3 <= y1)*/ {
         vy = y3;
         vx = x3;
         if (x1 >= x2) {
@@ -143,19 +143,20 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
             lx = x1;
             ly = y1;
         }
-    } else {
+    } /* else {
         printf("gggggg\n");
-    }
+    } */
+
+    printf("v: %d, %d | r: %d, %d | l: %d, %d\n", vx, vy, rx, ry, lx, ly);
 
     // note: vertex is at the physical bottom of the triangle
     int accl, deltal, liml, *basel, *stepl, incl, accr, deltar, limr, *baser, *stepr, incr, accb, deltab, limb, *baseb, *stepb, incb;
 
     // void bresenham(int* base, int* step, int* acc, int* delta, int lim, int inc) base increments every time.
 
-    if (ly > ry) { // R: v -> r, L: v -> l -> r
+    if (ly < ry) { // R: v -> r, L: v -> l -> r
 
         // assign helper variables
-
 
         if ( vx > rx ) {
             incr = 1;
@@ -163,27 +164,95 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
             incr = -1;
         }
 
-        if ( (vy - ry) >= incr * (vx - rx) ) { // more rise than run
+        if ( (ry - vy) >= incr * (vx - rx) ) { // more rise than run
             deltar = incr * (vx - rx);
             accr = deltar / 2;
-            limr = vy - ry;
+            limr = ry - vy;
             baser = &y;
-            stepr = &x; // goes up down, steps on x.
+            stepr = &xi; // goes up down, steps on x.
         } else { // more run than rise
-            deltar = vy - ry;
+            deltar = ry - vy;
             accr = deltar / 2;
             limr = incr * (vx - rx);
-            baser = &x;
-            stepr = &x;
+            baser = &xi;
+            stepr = &y;
         }
 
 
 
-        while (y > yl) {
 
+        if (vx > lx) {
+            incl = 1;
+        } else {
+            incl = -1;
         }
 
-        while (y > yr) {
+        if ( (ly - vy) >= incl * (vx - lx) ) { // more rise than run
+            deltal = incl * (vx - lx);
+            accl = deltal / 2;
+            liml = ly - vy;
+            basel = &y;
+            stepl = &xf; // goes up down, steps on x.
+        } else { // more run than rise
+            deltal = ly - vy;
+            accl = deltal / 2;
+            liml = incl * (vx - lx);
+            basel = &xf;
+            stepl = &y;
+        }
+
+        if ( lx > rx ) {
+            incb = 1;
+        } else {
+            incb = -1;
+        }
+
+        if ( (ry - ly) >= incb * (lx - rx) ) { // more rise than run
+            deltab = incr * (lx - rx);
+            accb = deltab / 2;
+            limb = ry - ly;
+            baseb = &y;
+            stepb = &xf; // goes up down, steps on x.
+        } else { // more run than rise
+            deltab = ry - ly;
+            accb = deltar / 2;
+            limb = incr * (lx - rx);
+            baseb = &xf;
+            stepb = &y;
+        }
+
+        // R: v -> r, L: v -> l -> r
+
+        xi = xf = vx;
+        y = vy;
+        int oldy;
+
+        while (y < ly) {
+            oldy = y;
+
+            bresenham(baser, stepr, &accr, &deltar, limr, incr);
+            bresenham(basel, stepl, &accl, &deltal, liml, incl);
+
+            y = oldy+1;
+            for (x = xi; x <= xf; x++) {
+                // printf("%d, %d\n", x, y);
+                put_pixel(surface, x, y, pixel);
+            }
+
+        }
+        printf("BOOOOP\n");
+
+        while (y < ry) {
+            oldy = y;
+
+            bresenham(baser, stepr, &accr, &deltar, limr, incr);
+            bresenham(baseb, stepb, &accb, &deltab, limb, incb);
+            y = oldy+1;
+
+            for (x = xi; x <= xf; x++) {
+                // printf("%d, %d\n", x, y);
+                put_pixel(surface, x, y, pixel);
+            }
 
         }
 
@@ -193,7 +262,7 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
 
 
 
-
+        printf("ugh...\n");
 
 
 
