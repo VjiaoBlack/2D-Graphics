@@ -262,7 +262,110 @@ void fill_triangle(SDL_Surface* surface, int x1, int y1, int x2, int y2, int x3,
 
 
 
-        printf("ugh...\n");
+        // assign helper variables
+
+        if ( vx > rx ) {
+            incr = 1;
+        } else {
+            incr = -1;
+        }
+
+        if ( (ry - vy) >= incr * (vx - rx) ) { // more rise than run
+            deltar = incr * (vx - rx);
+            accr = deltar / 2;
+            limr = ry - vy;
+            baser = &y;
+            stepr = &xi; // goes up down, steps on x.
+        } else { // more run than rise
+            deltar = ry - vy;
+            accr = deltar / 2;
+            limr = incr * (vx - rx);
+            baser = &xi;
+            stepr = &y;
+        }
+
+
+
+
+        if (vx > lx) {
+            incl = 1;
+        } else {
+            incl = -1;
+        }
+
+        if ( (ly - vy) >= incl * (vx - lx) ) { // more rise than run
+            deltal = incl * (vx - lx);
+            accl = deltal / 2;
+            liml = ly - vy;
+            basel = &y;
+            stepl = &xf; // goes up down, steps on x.
+        } else { // more run than rise
+            deltal = ly - vy;
+            accl = deltal / 2;
+            liml = incl * (vx - lx);
+            basel = &xf;
+            stepl = &y;
+        }
+
+        if ( rx > lx ) {
+            incb = 1;
+        } else {
+            incb = -1;
+        }
+
+        if ( (ly - ry) >= incb * (rx - lx) ) { // more rise than run
+            deltab = incb * (rx - lx);
+            accb = deltab / 2;
+            limb = ly - ry;
+            baseb = &y;
+            stepb = &xi; // goes up down, steps on x.
+        } else { // more run than rise
+            deltab = ly - ry;
+            accb = deltab / 2;
+            limb = incb * (rx - lx);
+            baseb = &xi;
+            stepb = &y;
+        }
+
+        // R: v -> r, L: v -> l -> r
+
+        xi = xf = vx;
+        y = vy;
+        int oldy;
+
+        while (y < ry) {
+            oldy = y;
+
+            bresenham(baser, stepr, &accr, &deltar, limr, incr);
+            bresenham(basel, stepl, &accl, &deltal, liml, incl);
+
+            y = oldy+1;
+            printf("%d to %d, at %d\n", xi, xf, y);
+
+            for (x = xi; x <= xf; x++) {
+                // printf("%d, %d\n", x, y);
+                put_pixel(surface, x, y, pixel);
+            }
+
+        }
+
+        printf("NEXT");
+
+        while (y < ly) {
+            oldy = y;
+
+            bresenham(basel, stepl, &accl, &deltal, liml, incl);
+            bresenham(baseb, stepb, &accb, &deltab, limb, incb);
+            // the baseb bresenham currently does not work.
+            y = oldy+1;
+
+            printf("%d to %d, at %d\n", xi, xf, y);
+            for (x = xi; x <= xf; x++) {
+                // printf("%d, %d\n", x, y);
+                put_pixel(surface, x, y, pixel);
+            }
+
+        }
 
 
 

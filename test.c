@@ -14,8 +14,9 @@ void draw() {
 
     draw_circle(screen,300,300,50,pixel(150,210,100));
 
-    fill_triangle(screen,300,150,325,350,275,250,pixel(80,160,40));
-    draw_triangle(screen,350,200,375,300,325,400,pixel(100,200,50));
+    fill_triangle(screen,300,150,325,250,275,350,pixel(80,160,40));
+    draw_triangle(screen,350,200,375,400,325,300,pixel(100,200,50));
+
 
 
 
