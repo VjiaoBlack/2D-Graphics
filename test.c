@@ -14,8 +14,8 @@ void draw() {
 
     draw_circle(screen,300,300,50,pixel(150,210,100));
 
-    fill_triangle(screen,300,150,325,250,275,350,pixel(80,160,40));
-    draw_triangle(screen,350,200,375,400,325,300,pixel(100,200,50));
+    fill_triangle(screen,300,225,225,250,350,300,pixel(80,160,40));
+    draw_triangle(screen,350,275,275,300,400,350,pixel(150,200,50));
 
 
 
@@ -38,7 +38,7 @@ int main(int argv, char* argc[]) {
     gettimeofday(&current, NULL);
 
 
-    while ((current.tv_sec  - start.tv_sec ) < 2) {
+    while ((current.tv_sec  - start.tv_sec ) < 5) {
 
         gettimeofday(&current, NULL);
 
